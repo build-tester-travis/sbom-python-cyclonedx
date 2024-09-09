@@ -9,20 +9,18 @@ jobs:
   include:
     - name: "Generate SBOM"
       os: linux
-      dist: focal # Overrides global dist
-      addons:
-        sbom:
-          on:
-            branch: main
-          run_phase: after_success
-          output_format: cyclonedx-json
-          input_dir: '/python'
-          output_dir: '/sbom/python'
+      dist: focal
       script:
         - echo "Generating SBOM"
-        - sudo mkdir -p /sbom/python # Ensure output directory exists
-        - pip install -r requirements.txt # Install dependencies first
+        - sudo mkdir -p /sbom/python
+        - pip install -r requirements.txt
         - python hello_world.py
+
+deploy:
+  provider: script
+  script: echo "Generating SBOM for deployment"
+  on:
+    branch: main
 
 before_install:
   - rvm use $(travis_internal_ruby) --fuzzy do ruby -S gem uninstall -aIx dpl
